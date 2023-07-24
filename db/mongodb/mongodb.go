@@ -324,7 +324,8 @@ func (m *Mongo) CreateCard(ca *users.Card, userid string) error {
 	defer s.Close()
 	c := s.DB("").C("cards")
 	//id := bson.NewObjectId()
-	mc := MongoCard{Card: *ca, ID: userid}
+	id := bson.ObjectIDFromHex(userid)
+	mc := MongoCard{Card: *ca, ID: id}
 	_, err := c.UpsertId(mc.ID, mc)
 	if err != nil {
 		return err
@@ -380,7 +381,8 @@ func (m *Mongo) CreateAddress(a *users.Address, userid string) error {
 	defer s.Close()
 	c := s.DB("").C("addresses")
 	//id := bson.NewObjectId()
-	ma := MongoAddress{Address: *a, ID: userid}
+	id := bson.ObjectIDFromHex(userid)
+	ma := MongoAddress{Address: *a, ID: id}
 	_, err := c.UpsertId(ma.ID, ma)
 	if err != nil {
 		return err
