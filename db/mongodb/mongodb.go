@@ -323,8 +323,8 @@ func (m *Mongo) CreateCard(ca *users.Card, userid string) error {
 	s := m.Session.Copy()
 	defer s.Close()
 	c := s.DB("").C("cards")
-	id := bson.NewObjectId()
-	mc := MongoCard{Card: *ca, ID: id}
+	//id := bson.NewObjectId()
+	mc := MongoCard{Card: *ca, ID: userid}
 	_, err := c.UpsertId(mc.ID, mc)
 	if err != nil {
 		return err
@@ -379,8 +379,8 @@ func (m *Mongo) CreateAddress(a *users.Address, userid string) error {
 	s := m.Session.Copy()
 	defer s.Close()
 	c := s.DB("").C("addresses")
-	id := bson.NewObjectId()
-	ma := MongoAddress{Address: *a, ID: id}
+	//id := bson.NewObjectId()
+	ma := MongoAddress{Address: *a, ID: userid}
 	_, err := c.UpsertId(ma.ID, ma)
 	if err != nil {
 		return err
