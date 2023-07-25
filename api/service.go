@@ -101,7 +101,7 @@ func (s *fixedService) GetAddresses(id string) ([]users.Address, error) {
 		return as, err
 	}
 	a, err := db.GetAddress(id)
-	a.AddLinks()
+	a.Links.AddAddress(id)
 	return []users.Address{a}, err
 }
 
@@ -120,7 +120,7 @@ func (s *fixedService) GetCards(id string) ([]users.Card, error) {
 		return cs, err
 	}
 	c, err := db.GetCard(id)
-	c.AddLinks()
+	c.Links.AddCard(id)
 	return []users.Card{c}, err
 }
 
