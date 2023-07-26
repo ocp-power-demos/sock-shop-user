@@ -120,9 +120,9 @@ func (s *fixedService) GetCards(id string) ([]users.Card, error) {
 		return cs, err
 	}
 	c, err := db.GetCard(id)
-	fmt.Printf("Card is [ %+v ]\n ", c)
+	fmt.Printf("[Card] is [ %+v ]\n ", c)
 	c.Links.AddLink("card", id)
-	fmt.Printf("Card with links is [ %+v ]\n", c)
+	fmt.Printf("[Card] with links is [ %+v ]\n", c)
 	return []users.Card{c}, err
 }
 

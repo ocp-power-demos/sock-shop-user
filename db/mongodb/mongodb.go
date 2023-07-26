@@ -295,9 +295,10 @@ func (m *Mongo) GetCard(id string) (users.Card, error) {
 	c := s.DB("").C("cards")
 	mc := MongoCard{}
 	err := c.FindId(bson.ObjectIdHex(id)).One(&mc)
-	fmt.Printf("Card is [ %+v ]\n ", c)
+	fmt.Printf("Card is [ %+v ]\n ", mc)
 	mc.Card.Links.AddLink("card", id)
-	fmt.Printf("Card with links is [ %+v ]\n", c)
+	fmt.Printf("Card with links is [ %+v ]\n", mc)
+	fmt.Printf("Card with links is [ %+v ]\n", mc.Card)
 	mc.AddID()
 	return mc.Card, err
 }
@@ -357,9 +358,9 @@ func (m *Mongo) GetAddress(id string) (users.Address, error) {
 	ma := MongoAddress{}
 	err := c.FindId(bson.ObjectIdHex(id)).One(&ma)
 	ma.AddID()
-	fmt.Printf("Card is [ %+v ]\n ", c)
+	fmt.Printf("Address is [ %+v ]\n ", ma)
 	ma.Address.Links.AddLink("address", id)
-	fmt.Printf("Card with links is [ %+v ]\n", c)
+	fmt.Printf("Address with links is [ %+v ]\n", ma)
 	return ma.Address, err
 }
 
