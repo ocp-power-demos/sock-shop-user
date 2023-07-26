@@ -101,7 +101,9 @@ func (s *fixedService) GetAddresses(id string) ([]users.Address, error) {
 		return as, err
 	}
 	a, err := db.GetAddress(id)
+	fmt.Printf("[Address] is [ %+v ]\n ", a)
 	a.Links.AddAddress(id)
+	fmt.Printf("[Address/Links] is [ %+v ]\n ", a)
 	return []users.Address{a}, err
 }
 
