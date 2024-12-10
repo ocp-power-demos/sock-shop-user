@@ -17,8 +17,10 @@ import (
 	"github.com/microservices-demo/user/api"
 	"github.com/microservices-demo/user/db"
 	"github.com/microservices-demo/user/db/mongodb"
-	stdopentracing "github.com/opentracing/opentracing-go"
-	zipkin "github.com/openzipkin/zipkin-go-opentracing"
+	opentracing "github.com/opentracing/opentracing-go"
+	zipkinot "github.com/openzipkin-contrib/zipkin-go-opentracing"
+	zgo "github.com/openzipkin/zipkin-go"
+	zipkinhttp "github.com/openzipkin/zipkin-go/reporter/http"
 	stdprometheus "github.com/prometheus/client_golang/prometheus"
 	commonMiddleware "github.com/weaveworks/common/middleware"
 )
@@ -71,31 +73,39 @@ func main() {
 	host := strings.Split(localAddr.String(), ":")[0]
 	defer conn.Close()
 
-	var tracer stdopentracing.Tracer
+	var tracer opentracing.Tracer
 	{
-		if zip == "" {
-			tracer = stdopentracing.NoopTracer{}
-		} else {
+		if zip != "" {
 			logger := log.With(logger, "tracer", "Zipkin")
 			logger.Log("addr", zip)
-			collector, err := zipkin.NewHTTPCollector(
-				zip,
-				zipkin.HTTPLogger(logger),
-			)
+
+			reporter := zipkinhttp.NewReporter(zip)
+			defer reporter.Close()
+
+			// create our local service endpoint
+			endpoint, err := zgo.NewEndpoint("myService", fmt.Sprintf("%v:%v", host, port))
 			if err != nil {
-				logger.Log("err", err)
+				logger.Log("unable to create local endpoint", err)
 				os.Exit(1)
 			}
-			tracer, err = zipkin.NewTracer(
-				zipkin.NewRecorder(collector, false, fmt.Sprintf("%v:%v", host, port), ServiceName),
-			)
+
+			// initialize our tracer
+			t, err := zgo.NewTracer(reporter, zgo.WithLocalEndpoint(endpoint))
 			if err != nil {
-				logger.Log("err", err)
+				logger.Log("tracer err", err)
 				os.Exit(1)
 			}
+
+			// use zipkin-go-opentracing to wrap our tracer
+			tracer := zipkinot.Wrap(t)
+
+			// optionally set as Global OpenTracing tracer instance
+			opentracing.SetGlobalTracer(tracer)
+		} else {
+			tracer = opentracing.NoopTracer{}
 		}
-		stdopentracing.InitGlobalTracer(tracer)
 	}
+
 	dbconn := false
 	for !dbconn {
 		err := db.Init()

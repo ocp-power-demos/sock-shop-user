@@ -69,7 +69,7 @@ imports:
   subpackages:
   - ext
   - log
-- name: github.com/openzipkin/zipkin-go-opentracing
+- name: github.com/openzipkin-contrib/zipkin-go-opentracing
   version: 594640b9ef7e5c994e8d9499359d693c032d738c
   subpackages:
   - _thrift/gen-go/scribe
